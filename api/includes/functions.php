@@ -47,19 +47,3 @@ function escape(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-// Generate a random CSRF token and store it in the session
-function csrfToken(): string {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}
-
-// Check that the submitted CSRF token matches the one in the session
-function csrfVerify(): void {
-    $submitted = $_POST['csrf_token'] ?? '';
-    if (!hash_equals(csrfToken(), $submitted)) {
-        http_response_code(403);
-        exit('Invalid CSRF token.');
-    }
-}

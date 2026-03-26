@@ -11,10 +11,6 @@ $success = '';
 $fields  = ['name' => '', 'email' => '', 'keyprogramming' => '', 'profile' => '', 'education' => '', 'URLlinks' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_log('register POST — SESSION: ' . print_r($_SESSION, true));
-    error_log('register POST — csrf_token submitted: ' . ($_POST['csrf_token'] ?? 'MISSING'));
-    csrfVerify();
-
     foreach ($fields as $key => $_) {
         $fields[$key] = trim($_POST[$key] ?? '');
     }
@@ -80,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post" action="/register.php" class="card">
-        <input type="hidden" name="csrf_token" value="<?= escape(csrfToken()) ?>">
         <div class="form-group">
             <label for="name">Full Name *</label>
             <input type="text" id="name" name="name" value="<?= escape($fields['name']) ?>" required>

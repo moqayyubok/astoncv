@@ -10,8 +10,6 @@ $error = '';
 $email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrfVerify();
-
     $email    = trim($_POST['email']    ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -53,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post" action="/login.php" class="card">
-        <input type="hidden" name="csrf_token" value="<?= escape(csrfToken()) ?>">
         <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" value="<?= escape($email) ?>" required autofocus>
