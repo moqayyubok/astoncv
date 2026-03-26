@@ -6,24 +6,19 @@ try {
     $pdo = getDB();
     $sql = file_get_contents(__DIR__ . '/../setup.sql');
 
-    // Strip SQL comments and split by semicolon
+    // Strip single-line comments first, then split by semicolon
+    $sql        = preg_replace('/--[^\n]*/', '', $sql);
     $statements = array_filter(
         array_map('trim', explode(';', $sql)),
-        fn($s) => $s !== '' && !preg_match('/^\s*--/', $s)
+        fn($s) => $s !== ''
     );
 
     foreach ($statements as $i => $stmt) {
-        // Skip pure-comment blocks
-        $clean = preg_replace('/--[^\n]*/', '', $stmt);
-        if (trim($clean) === '') {
-            continue;
-        }
-
         try {
             $pdo->exec($stmt);
-            echo "OK  [" . ($i + 1) . "] " . substr(trim($stmt), 0, 80) . "\n";
+            echo "OK  [" . ($i + 1) . "] " . substr($stmt, 0, 80) . "\n";
         } catch (PDOException $e) {
-            echo "ERR [" . ($i + 1) . "] " . substr(trim($stmt), 0, 80) . "\n";
+            echo "ERR [" . ($i + 1) . "] " . substr($stmt, 0, 80) . "\n";
             echo "    => " . $e->getMessage() . "\n";
         }
     }
