@@ -1,5 +1,12 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    require_once __DIR__ . '/functions.php';
+    require_once __DIR__ . '/session_handler.php';
+
+    // Store sessions in MySQL so they persist across serverless function instances
+    $handler = new DbSessionHandler();
+    session_set_save_handler($handler, true);
+
     // Set httpOnly and SameSite=Strict so the cookie can't be read by JS or sent cross-site
     session_set_cookie_params([
         'lifetime' => 0,

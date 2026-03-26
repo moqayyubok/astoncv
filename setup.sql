@@ -6,6 +6,14 @@
 --          railway < setup.sql
 -- ============================================================
 
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `id`            VARCHAR(128)   NOT NULL,
+  `data`          TEXT           NOT NULL,
+  `last_accessed` INT UNSIGNED   NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX (`last_accessed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `cvs` (
   `id`             bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name`           varchar(100)        NOT NULL,
