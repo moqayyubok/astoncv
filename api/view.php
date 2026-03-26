@@ -27,7 +27,12 @@ $pageTitle = $cv ? escape($cv['name']) . '\'s CV' : 'CV Not Found';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<a href="/index.php" class="back-link">Back to all CVs</a>
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">
+    <a href="/index.php" class="back-link" style="margin-bottom:0;">Back to all CVs</a>
+    <?php if ($cv && isset($_SESSION['user_id']) && $_SESSION['user_id'] == $cv['id']): ?>
+        <a href="/dashboard.php" class="btn btn-primary">Edit my CV</a>
+    <?php endif; ?>
+</div>
 
 <?php if ($error): ?>
     <div class="alert alert-error"><?= escape($error) ?></div>
