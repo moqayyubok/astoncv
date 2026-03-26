@@ -10,21 +10,23 @@ try {
     $pdo = getDB();
 
     if ($query !== '') {
+        $search = '%' . $query . '%';
         // Use a parameterised query so the search term can't cause SQL injection
         $stmt = $pdo->prepare(
             'SELECT id, name, email, keyprogramming
              FROM cvs
              WHERE name LIKE :q
-                OR keyprogramming LIKE :q
+                OR keyprogramming LIKE :q2
              ORDER BY name'
         );
-        $stmt->execute([':q' => '%' . $query . '%']);
+        $stmt->execute([':q' => $search, ':q2' => $search]);
     } else {
         $stmt = $pdo->query('SELECT id, name, email, keyprogramming FROM cvs ORDER BY name');
     }
 
     $cvs = $stmt->fetchAll();
 } catch (PDOException $e) {
+    error_log('search.php query failed: ' . $e->getMessage());
     $error = 'Database error. Please try again later.';
 }
 ?>
