@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
 
-// SECURITY: Form validation — FILTER_VALIDATE_INT rejects any non-integer or out-of-range id.
+// Reject any non-integer or out-of-range id values
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if ($id === false || $id === null) {
     redirect('/index.php');
@@ -11,7 +11,6 @@ $cv    = null;
 $error = '';
 
 try {
-    // SECURITY: Prepared statements — parameterised query prevents SQL injection.
     $stmt = getDB()->prepare(
         'SELECT id, name, email, keyprogramming, profile, education, URLlinks
          FROM cvs
@@ -64,20 +63,20 @@ require_once __DIR__ . '/includes/header.php';
                     <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <span style="color:#aaa;">—</span>
+                    <span style="color:#52525b;">—</span>
                 <?php endif; ?>
             </span>
         </div>
         <div class="field">
             <span class="field-label">Profile</span>
             <span class="field-value">
-                <?= $cv['profile'] ? escape($cv['profile']) : '<span style="color:#aaa;">—</span>' ?>
+                <?= $cv['profile'] ? escape($cv['profile']) : '<span style="color:#52525b;">—</span>' ?>
             </span>
         </div>
         <div class="field">
             <span class="field-label">Education</span>
             <span class="field-value">
-                <?= $cv['education'] ? escape($cv['education']) : '<span style="color:#aaa;">—</span>' ?>
+                <?= $cv['education'] ? escape($cv['education']) : '<span style="color:#52525b;">—</span>' ?>
             </span>
         </div>
         <div class="field">
@@ -90,7 +89,7 @@ require_once __DIR__ . '/includes/header.php';
                         </a><br>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <span style="color:#aaa;">—</span>
+                    <span style="color:#52525b;">—</span>
                 <?php endif; ?>
             </span>
         </div>

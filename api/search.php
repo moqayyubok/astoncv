@@ -10,7 +10,7 @@ try {
     $pdo = getDB();
 
     if ($query !== '') {
-        // SECURITY: Prepared statements — user search term bound as a parameter, not concatenated.
+        // Use a parameterised query so the search term can't cause SQL injection
         $stmt = $pdo->prepare(
             'SELECT id, name, email, keyprogramming
              FROM cvs
@@ -46,7 +46,7 @@ try {
     <div class="alert alert-error"><?= escape($error) ?></div>
 <?php else: ?>
     <?php if ($query !== ''): ?>
-        <p style="margin-bottom:1.1rem;color:#666;">
+        <p style="margin-bottom:1.1rem;color:#a1a1aa;">
             <?= count($cvs) ?> result<?= count($cvs) !== 1 ? 's' : '' ?> for
             &ldquo;<?= escape($query) ?>&rdquo;
         </p>

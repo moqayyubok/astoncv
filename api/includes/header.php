@@ -1,8 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    // SECURITY: Session security — sets httpOnly and SameSite=Strict on the session cookie
-    // so it cannot be read by JavaScript (mitigates XSS session theft) and is not sent
-    // on cross-site requests (mitigates CSRF).
+    // Set httpOnly and SameSite=Strict so the cookie can't be read by JS or sent cross-site
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
@@ -28,10 +26,10 @@ require_once __DIR__ . '/functions.php';
         <a href="/index.php" class="logo">AstonCV</a>
         <nav class="nav">
             <a href="/index.php">Home</a>
-            <a href="/search.php">Search</a>
+            <a href="/search.php">Search CVs</a>
             <?php if (isLoggedIn()): ?>
-                <a href="/dashboard.php">Dashboard</a>
-                <span class="nav-user">Hi, <?= escape($_SESSION['user_name']) ?></span>
+                <a href="/dashboard.php">My Dashboard</a>
+                <span class="nav-user"><?= escape($_SESSION['user_name']) ?></span>
                 <a href="/logout.php" class="btn btn-outline">Logout</a>
             <?php else: ?>
                 <a href="/register.php">Register</a>

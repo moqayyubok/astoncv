@@ -11,7 +11,6 @@ $success = '';
 $fields  = ['name' => '', 'email' => '', 'keyprogramming' => '', 'profile' => '', 'education' => '', 'URLlinks' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // SECURITY: CSRF tokens — validate token before processing any POST data.
     csrfVerify();
 
     foreach ($fields as $key => $_) {
@@ -20,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password  = $_POST['password']  ?? '';
     $password2 = $_POST['password2'] ?? '';
 
-    // SECURITY: Form validation — name, email format, password length, and confirmation checked.
+    // Validate all required fields
     if ($fields['name'] === '') {
         $errors[] = 'Full name is required.';
     }
@@ -44,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([
                 ':name'           => $fields['name'],
                 ':email'          => $fields['email'],
-                // SECURITY: Password hashing — bcrypt via PASSWORD_BCRYPT; never stores plaintext.
+                // Hash the password with bcrypt before storing it
                 ':password'       => password_hash($password, PASSWORD_BCRYPT),
                 ':keyprogramming' => $fields['keyprogramming'],
                 ':profile'        => $fields['profile'],
@@ -79,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post" action="/register.php" class="card">
-        <?php /* SECURITY: CSRF tokens — hidden field carries token validated on POST. */ ?>
         <input type="hidden" name="csrf_token" value="<?= escape(csrfToken()) ?>">
         <div class="form-group">
             <label for="name">Full Name *</label>
@@ -118,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 
-    <p style="text-align:center;margin-top:.75rem;color:#666;">
+    <p style="text-align:center;margin-top:.75rem;color:#a1a1aa;">
         Already registered? <a href="/login.php">Log in</a>
     </p>
 </div>
