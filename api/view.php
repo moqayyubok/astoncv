@@ -1,0 +1,100 @@
+<?php
+require_once __DIR__ . '/includes/functions.php';
+
+// SECURITY: Form validation — FILTER_VALIDATE_INT rejects any non-integer or out-of-range id.
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if ($id === false || $id === null) {
+    redirect('/index.php');
+}
+
+$cv    = null;
+$error = '';
+
+try {
+    // SECURITY: Prepared statements — parameterised query prevents SQL injection.
+    $stmt = getDB()->prepare(
+        'SELECT id, name, email, keyprogramming, profile, education, URLlinks
+         FROM cvs
+         WHERE id = :id
+         LIMIT 1'
+    );
+    $stmt->execute([':id' => $id]);
+    $cv = $stmt->fetch();
+} catch (PDOException $e) {
+    $error = 'Database error. Please try again later.';
+}
+
+$pageTitle = $cv ? escape($cv['name']) . '\'s CV' : 'CV Not Found';
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<a href="/index.php" class="back-link">Back to all CVs</a>
+
+<?php if ($error): ?>
+    <div class="alert alert-error"><?= escape($error) ?></div>
+
+<?php elseif ($cv === false): ?>
+    <div class="alert alert-error">
+        No CV found with that ID. It may have been removed.
+    </div>
+
+<?php else:
+    $links = array_filter(array_map('trim', explode(',', $cv['URLlinks'] ?? '')));
+?>
+    <div class="page-heading">
+        <h1><?= escape($cv['name']) ?></h1>
+    </div>
+
+    <div class="card cv-detail">
+        <div class="field">
+            <span class="field-label">Name</span>
+            <span class="field-value"><?= escape($cv['name']) ?></span>
+        </div>
+        <div class="field">
+            <span class="field-label">Email</span>
+            <span class="field-value"><?= escape($cv['email']) ?></span>
+        </div>
+        <div class="field">
+            <span class="field-label">Key Languages</span>
+            <span class="field-value">
+                <?php if ($cv['keyprogramming']): ?>
+                    <div class="tags">
+                    <?php foreach (array_filter(array_map('trim', explode(',', $cv['keyprogramming']))) as $tag): ?>
+                        <span class="tag"><?= escape($tag) ?></span>
+                    <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <span style="color:#aaa;">—</span>
+                <?php endif; ?>
+            </span>
+        </div>
+        <div class="field">
+            <span class="field-label">Profile</span>
+            <span class="field-value">
+                <?= $cv['profile'] ? escape($cv['profile']) : '<span style="color:#aaa;">—</span>' ?>
+            </span>
+        </div>
+        <div class="field">
+            <span class="field-label">Education</span>
+            <span class="field-value">
+                <?= $cv['education'] ? escape($cv['education']) : '<span style="color:#aaa;">—</span>' ?>
+            </span>
+        </div>
+        <div class="field">
+            <span class="field-label">Links</span>
+            <span class="field-value">
+                <?php if ($links): ?>
+                    <?php foreach ($links as $link): ?>
+                        <a href="<?= escape($link) ?>" target="_blank" rel="noopener noreferrer">
+                            <?= escape($link) ?>
+                        </a><br>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <span style="color:#aaa;">—</span>
+                <?php endif; ?>
+            </span>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
