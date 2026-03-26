@@ -11,6 +11,8 @@ $success = '';
 $fields  = ['name' => '', 'email' => '', 'keyprogramming' => '', 'profile' => '', 'education' => '', 'URLlinks' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log('register POST — SESSION: ' . print_r($_SESSION, true));
+    error_log('register POST — csrf_token submitted: ' . ($_POST['csrf_token'] ?? 'MISSING'));
     csrfVerify();
 
     foreach ($fields as $key => $_) {

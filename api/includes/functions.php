@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../config/database.php';
 
 function getDB(): PDO {
@@ -19,7 +22,12 @@ function getDB(): PDO {
             PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             PDO::MYSQL_ATTR_SSL_CA                 => '',
         ];
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        try {
+            $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        } catch (PDOException $e) {
+            error_log('getDB() failed: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     return $pdo;

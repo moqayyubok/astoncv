@@ -8,7 +8,12 @@ class DbSessionHandler implements SessionHandlerInterface
 
     public function open(string $path, string $name): bool
     {
-        $this->pdo = getDB();
+        try {
+            $this->pdo = getDB();
+        } catch (PDOException $e) {
+            error_log('DbSessionHandler::open() failed: ' . $e->getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -19,24 +24,34 @@ class DbSessionHandler implements SessionHandlerInterface
 
     public function read(string $id): string|false
     {
-        $stmt = $this->pdo->prepare(
-            'SELECT data FROM sessions WHERE id = ? LIMIT 1'
-        );
-        $stmt->execute([$id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? $row['data'] : '';
+        try {
+            $stmt = $this->pdo->prepare(
+                'SELECT data FROM sessions WHERE id = ? LIMIT 1'
+            );
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? $row['data'] : '';
+        } catch (PDOException $e) {
+            error_log('DbSessionHandler::read() failed: ' . $e->getMessage());
+            return '';
+        }
     }
 
     public function write(string $id, string $data): bool
     {
-        $stmt = $this->pdo->prepare(
-            'INSERT INTO sessions (id, data, last_accessed)
-             VALUES (?, ?, UNIX_TIMESTAMP())
-             ON DUPLICATE KEY UPDATE
-               data          = VALUES(data),
-               last_accessed = UNIX_TIMESTAMP()'
-        );
-        return $stmt->execute([$id, $data]);
+        try {
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO sessions (id, data, last_accessed)
+                 VALUES (?, ?, UNIX_TIMESTAMP())
+                 ON DUPLICATE KEY UPDATE
+                   data          = VALUES(data),
+                   last_accessed = UNIX_TIMESTAMP()'
+            );
+            return $stmt->execute([$id, $data]);
+        } catch (PDOException $e) {
+            error_log('DbSessionHandler::write() failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function destroy(string $id): bool
